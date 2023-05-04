@@ -1,118 +1,133 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Davaleba
+namespace ConsoleApp1
 {
-    public class Book
+    class Program
     {
-        public string BookName { get; set; }
-        public string BookAuthor { get; set; }
-        public int Isbn { get; set; }
-        public int BookCreateDate { get; set; }
-    }
 
-    class FictionBook : Book
-    {
-        public int Ganre { get; set; }
-    }
-
-    class NonFictionBook : Book
-    {
-        public int Ganre { get; set; }
-    }
-
-
-    public class Library<T>
-    {
-        public Library(User user, Book book)
+        public class FilterObject
         {
-            Users = new List<User>();
-            Books = new List<Book>();
-            Users.Add(user);
-            Books.Add(book);
+            public string Name { get; set; }
+            public string Author { get; set; }
+            public int? Isbn { get; set; }
+            public DateTime? Date { get; set; }
+
         }
-        public Library(User[] user, Book[] book)
+        public abstract class Book
         {
-            Users = user.ToList();
-            Books = book.ToList();
+            public string Name { get; set; }
+            public string Author { get; set; }
+            public int Isbn { get; set; }
+            public DateTime? Date { get; set; }
+
+        }
+        public class Fictionbook : Book
+        {
+            public string Ganre { get; set; }
+
+        }
+        public class NonFictionBook : Book
+        {
+            public string Ganre { get; set; }
         }
 
-        public List<User> Users { get; set; }
-        public List<Book> Books { get; set; }
-
-
-        public bool AddUser(User user)
+        public class library<TBook, TUser> where TBook : Book
         {
-            if (Users.Contains(user))
+
+            private List<TBook> _books;
+            private Dictionary<string, TUser> _user;
+            public library()
             {
-                return false;
+                _books = new List<TBook>();
+                _user = new Dictionary<string, TUser>();
             }
-            else
-            {
-                Users.Add(user);
-                return true;
-            }
-        }
 
-
-        public void Addbook(Book book, User user)
-        {
-            if (AddUser(user) == false)
+            public void EddBook(TBook book)
             {
 
-
-                foreach (var item in Books)
+                foreach (var item in _books)
                 {
 
-                    if (book.Equals(item))
+                    if (_books.Equals(book))
                     {
                         Console.WriteLine("whe alredy have this book");
                     }
                     else
                     {
-                        Books.Add(book);
-                        Console.WriteLine("book added");
+                        _books.Add(book);
+                        Console.WriteLine("Done");
                     }
                 }
-
             }
-            else
+            public void EddUser(string Name, TUser user)
             {
-                AddUser(user);
-                Console.WriteLine("user alredy added");
-                Addbook(book, user);
+                if (_user.Values.Equals(user))
+                {
+                    Console.WriteLine("you alredy are user");
+                }
+                else
+                {
+                    _user.Add(Name, user);
+                }
+            }
+
+            public void DeleteUser(string name, TUser user)
+            {
+                if (_user.Values.Contains(user))
+                {
+                    _user.Remove(name);
+                }
+                else
+                {
+                    _user.Add(name, user);
+                }
+            }
+            public void FilterBook(FilterObject filter)
+            {
+
+                if (!string.IsNullOrEmpty(filter.Name))
+                {
+                    _books = _books.Where(b => b.Name == filter.Name).ToList();
+                    foreach (var item in _books)
+                    {
+                        Console.WriteLine(item);
+                    }
+                }
+                else if (!string.IsNullOrEmpty(filter.Author))
+                {
+                    _books = _books.Where(x => x.Author == filter.Author).ToList();
+                    foreach (var item in _books)
+                    {
+                        Console.WriteLine(item);
+                    }
+                }
+                else if (!string.IsNullOrEmpty(filter.Date.ToString()))
+                {
+                    _books = _books.Where(x => x.Author == filter.Date.ToString()).ToList();
+                    foreach (var item in _books)
+                    {
+                        Console.WriteLine(item);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("0 book");
+                }
             }
         }
-    }
-    public class User
-    {
-        public string UserName { get; set; }
-        public string Pasword { get; set; }
-        public string Email { get; set; }
-    }
-
-
-
-
-    class Program
-    {
+        public class User
+        {
+            public string UserName { get; set; }
+            public string Password { get; set; }
+            public string Email { get; set; }
+        };
         static void Main(string[] args)
         {
-            var user = new User[] {
-            new User{UserName="beka",Pasword="123",Email="112"}
-            };
-
-
-            Book[] book = new Book[] {
-                new Book{ BookAuthor="book",BookName="123",BookCreateDate=12,Isbn=12}
-            };
-
-            var library = new Library<string>(user, book);
+            var NonFictionBook = new NonFictionBook();
+            var User = new User();
+            var library = new library<NonFictionBook, User>();
         }
     }
-
-
 }
